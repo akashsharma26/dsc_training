@@ -1,4 +1,4 @@
-# Date: 29JUN2020 Time: 11:00AM==
+# Date: 29JUN2020 Time: 11:00AM
 # Author: Data Transformation (Akash Sharma)
 
 # Objective: Campaign Preparation
@@ -22,13 +22,23 @@ library(arrow)
 
 #----Path declarations---- 
 
-path_rfm <- "C:/Users/Akash Sharma/Desktop/Training/input/rfm/24APR2021-24APR2021_CUSTOMER_RFM.parquet"
-path_mt_str <- "C:/Users/Akash Sharma/Desktop/Training/input/masters/store masters/vmart stores lite - mstr_store.csv"
-path_mt_dlr <- "C:/Users/Akash Sharma/Desktop/Training/input/masters/delivery master/delivery_master.csv"
-path_output <- "C:/Users/Akash Sharma/Desktop/Training/output/df/df.csv"
-path_op <- "C:/Users/Akash Sharma/Desktop/Training/output/regions"
+source("C:/R - Projects/library.R")
+path_proj <- GET_PROJECT_DIR(proj_id = "pid_48")
+
+
+
+path_rfm <- file.path(path_proj, "input/rfm/24APR2021-24APR2021_CUSTOMER_RFM.parquet")
+
+path_str <-file.path(path_proj, "input/masters/store masters/vmart stores lite - mstr_store.csv")
+
+path_dlr <- file.path(path_proj, "input/masters/delivery master/delivery_master.csv")
+
+path_output <- file.path(path_proj, "output/output.csv")
+
+path_op <- file.path(path_proj, "output/regions")
 
 #----Local functions----
+
 
 
 #----Function Calls, Data reading & Manipulations----
@@ -44,13 +54,13 @@ dt_rfm$customer_type <- cut(dt_rfm$days, breaks=c(0,180,360,720,Inf), labels = c
 
 #2. map store with their zone, region & language using store_master & language_master
 
-mt_str <- fread(path_mt_str, integer64 = "double")
+mt_str <- fread(path_str, integer64 = "double")
 
 
 #3. map customers with their communication_medium using delivery_master    n_a: not_available    d: delivered   n_d: not_delivered If customer is not present in delivery_master then n_a
 
 dt_rfm <- left_join(dt_rfm, mt_str,by="Store")
-mt_dlr <- fread(path_mt_dlr)
+mt_dlr <- fread(path_dlr)
 
 dt_rfm$Customer_Mobile <- as.numeric(dt_rfm$Customer_Mobile)
 mt_dlr$Customer_Mobile <- as.numeric(mt_dlr$Customer_Mobile)
